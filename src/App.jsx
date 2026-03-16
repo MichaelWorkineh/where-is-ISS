@@ -13,7 +13,7 @@ function App() {
     <div className='relative flex items-center justify-center h-screen overflow-hidden'>
       <HeroBackground videoID='zPH5KtjJFaQ'/>
       <div className='relative flex items-center justify-center z-10 w-full h-full bg-black/60'>
-        <h1 className='text-5xl text-center text-white font-bold'>Where is the ISS?</h1>
+        <h1 className='text-7xl text-center text-white font-bold'>Where is the ISS?</h1>
       </div>
     </div>
     <Coordinates/>

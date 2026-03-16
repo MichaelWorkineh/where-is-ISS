@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { PointLight, Mesh, AmbientLight, SphereGeometry, MeshStandardMaterial, TextureLoader } from "three";
-import { OrbitControls, Stars } from "@react-three/drei";
+import { OrbitControls, Stars, Line } from "@react-three/drei";
 import Img from "./earthTexture.jpg"
 import LatLonGrid from "./LatLonGrid";
 import { useGLTF } from "@react-three/drei";
@@ -46,7 +46,8 @@ export default function Coordinates() {
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
     const [altitude, setAltitude] = useState(0);
-
+    const [loaded, setLoaded] = useState(false)
+    const [path, setPath] = useState(null)
     const texture = useLoader(TextureLoader, Img)
     const fetchCoordinates = async () => {
             try {
@@ -54,11 +55,12 @@ export default function Coordinates() {
                 setLatitude(response.data.latitude);
                 setLongitude(response.data.longitude);
                 setAltitude(response.data.altitude);
+                setLoaded(true)
             } catch (error) {
                 console.error('Error fetching ISS coordinates:', error);
             }
         };
-    
+
     useEffect(()=>{
         fetchCoordinates();
 
@@ -70,6 +72,25 @@ export default function Coordinates() {
 
 
     const [x, y, z] = CartesianCoordinates(latitude, longitude, altitude + earthRadius-2000);
+
+    const [orbitPath, setOrbitPath] = useState([]);
+    
+    useEffect(()=>{
+        if (!loaded) return;
+        const newPoint = [x*scale, y*scale, z*scale];
+        setOrbitPath(prev=>{
+            const updated = [...prev, newPoint];
+            if (updated.length > 1000000) {
+                setPath(updated)
+                updated.shift();
+            }
+            return updated;
+        })
+    
+    },[x, y, z])
+
+
+    
     return (
         <>
             
@@ -92,13 +113,14 @@ export default function Coordinates() {
                     <meshStandardMaterial map={texture} />
                 </mesh>
                 <LatLonGrid radius={5.01}/>
-                {/*
-                <mesh position={[x * scale, y * scale, z * scale]}>
-                    <sphereGeometry args={[0.1, 16, 16]} />
-                    <meshStandardMaterial color="red" />
-                </mesh>
                 
-                */}
+                {orbitPath.length > 1 &&(
+                        
+                        <Line points={orbitPath} color="yellow" lineWidth={2} dashed={false} />
+                    
+                )}
+                {console.log(path)}
+                
                 <ISSModel position={[x * scale, y * scale, z * scale]}/>            
                 
             </Canvas>
