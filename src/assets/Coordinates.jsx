@@ -13,7 +13,7 @@ import { useTexture } from "@react-three/drei";
 //import Model from "./ISS/source/mesh.glb"
 const earthRadius = 6371;// in kilometers
 const simEarthRadius = 5;// in units for the simulation, you can adjust this as needed
-useGLTF.preload('/ISS/source/satglb.glb');
+useGLTF.preload('/ISS/source/sat-compressed.glb');
 useTexture.preload(Img)
 
 function ISSModel({position = [0, 0, 6], scale = 0.001}){
@@ -133,18 +133,13 @@ export default function Coordinates() {
                     
                 )}
                 {console.log(path)}
-                {
-                <mesh position={[x * scale, y * scale, z * scale]}>
-                    <sphereGeometry args={[0.2, 32, 32]}/>
-                    <meshStandardMaterial color={"red"}/>
-                </mesh>
-                /**
-                <ISSModel position={[x * scale, y * scale, z * scale]}/>            
-                 */
-                }
+    
+                <ISSModel position={[x * scale, y * scale, z * scale]}/>   
+                
                 <Preload all/>
                 </Suspense>
             </Canvas>
         </>
     )
 }
+//gltf-pipeline -i public/ISS/source/satglb.glb -o public/ISS/source/sat-compressed.glb -d
