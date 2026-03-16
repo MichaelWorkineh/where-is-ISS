@@ -51,7 +51,7 @@ export default function Coordinates() {
     const texture = useLoader(TextureLoader, Img)
     const fetchCoordinates = async () => {
             try {
-                const response = await axios.get('/api/v1/satellites/25544');
+                const response = await axios.get('/api/iss');
                 setLatitude(response.data.latitude);
                 setLongitude(response.data.longitude);
                 setAltitude(response.data.altitude);
