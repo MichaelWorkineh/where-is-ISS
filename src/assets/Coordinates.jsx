@@ -133,8 +133,15 @@ export default function Coordinates() {
                     
                 )}
                 {console.log(path)}
-                
+                {
+                <mesh position={[x * scale, y * scale, z * scale]}>
+                    <sphereGeometry args={[0.2, 32, 32]}/>
+                    <meshStandardMaterial color={"red"}/>
+                </mesh>
+                /**
                 <ISSModel position={[x * scale, y * scale, z * scale]}/>            
+                 */
+                }
                 <Preload all/>
                 </Suspense>
             </Canvas>
