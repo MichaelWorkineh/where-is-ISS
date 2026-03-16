@@ -1,20 +1,24 @@
 import React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import axios from "axios";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { PointLight, Mesh, AmbientLight, SphereGeometry, MeshStandardMaterial, TextureLoader } from "three";
 import { OrbitControls, Stars, Line } from "@react-three/drei";
-import Img from "./earthTexture.jpg"
+import Img from "./earthTexture.webp"
 import LatLonGrid from "./LatLonGrid";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Preload } from "@react-three/drei";
+import { useTexture } from "@react-three/drei";
+
 //import Model from "./ISS/source/mesh.glb"
 const earthRadius = 6371;// in kilometers
 const simEarthRadius = 5;// in units for the simulation, you can adjust this as needed
+useGLTF.preload('/ISS/source/satglb.glb');
+useTexture.preload(Img)
 
 function ISSModel({position = [0, 0, 6], scale = 0.001}){
     const {scene} =useGLTF('/ISS/source/satglb.glb');
-    return <primitive object={scene} position={position} scale={[0.2, 0.2, 0.2]} />;
+    return <primitive object={scene} position={position} scale={[0.2, 0.2, 0.2]} dispose={null} />;
 }
 
 function CartesianCoordinates( latitude, longitude, altitude ) {
@@ -41,6 +45,18 @@ function latLonToXYZ(lat, lon, radius) {
   return [x, y, z]
 }
 
+function Earth(){
+    const texture = useTexture(Img)
+    return(
+        <>
+            <mesh rotation={[0, -Math.PI / 2, 0]}> 
+                <sphereGeometry args={[5, 32, 32]}/>
+                <meshStandardMaterial map={texture} />
+            </mesh>
+        </>
+    )
+}
+
 export default function Coordinates() {
     const scale = simEarthRadius / earthRadius; // scale factor to convert real coordinates to simulation coordinates
     const [latitude, setLatitude] = useState(0);
@@ -48,7 +64,7 @@ export default function Coordinates() {
     const [altitude, setAltitude] = useState(0);
     const [loaded, setLoaded] = useState(false)
     const [path, setPath] = useState(null)
-    const texture = useLoader(TextureLoader, Img)
+
     const fetchCoordinates = async () => {
             try {
                 const response = await axios.get('/api/iss');
@@ -80,7 +96,7 @@ export default function Coordinates() {
         const newPoint = [x*scale, y*scale, z*scale];
         setOrbitPath(prev=>{
             const updated = [...prev, newPoint];
-            if (updated.length > 1000000) {
+            if (updated.length > 2000) {
                 setPath(updated)
                 updated.shift();
             }
@@ -95,23 +111,20 @@ export default function Coordinates() {
         <>
             
             <Canvas camera={{position: [x*scale, y*scale + 2, z*scale + 2]}} style={{ height: '100vh', width: '100%'}}>
+                <Suspense fallback={null}>
                 <color attach="background" args={["black"]}/>
                 <OrbitControls />
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
                 <Stars
-                    radius={100}
-                    depth={50}
-                    count={5000}
-                    factor={4}
-                    saturation={0}
+                    radius={80}
+                    depth={40}
+                    count={2000}
+                    factor={3}
                     fade
-                    speed={1}
+                    speed={0.5}
                 />
-                <mesh rotation={[0, -Math.PI / 2, 0]}> 
-                    <sphereGeometry args={[5, 64, 64]}/>
-                    <meshStandardMaterial map={texture} />
-                </mesh>
+                <Earth/>
                 <LatLonGrid radius={5.01}/>
                 
                 {orbitPath.length > 1 &&(
@@ -122,7 +135,8 @@ export default function Coordinates() {
                 {console.log(path)}
                 
                 <ISSModel position={[x * scale, y * scale, z * scale]}/>            
-                
+                <Preload all/>
+                </Suspense>
             </Canvas>
         </>
     )
