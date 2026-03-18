@@ -16,9 +16,17 @@ const simEarthRadius = 5;// in units for the simulation, you can adjust this as 
 useGLTF.preload('/ISS/source/sat-compressed.glb');
 useTexture.preload(Img)
 
-function ISSModel({position = [0, 0, 6], scale = 0.001}){
+function ISSModel({position = [0, 0, 6], scale = 0.001, quick = true}){
+    if (quick == true){
+        return(
+            <mesh position={position}> 
+                <sphereGeometry args={[0.2, 32, 32]}/>
+                <meshStandardMaterial color={"red"} />
+            </mesh>
+        )
+    } 
     const {scene} =useGLTF('/ISS/source/satglb.glb');
-    return <primitive object={scene} position={position} scale={[0.2, 0.2, 0.2]} dispose={null} />;
+    return (<primitive object={scene} position={position} scale={[0.2, 0.2, 0.2]} dispose={null} />)
 }
 
 function CartesianCoordinates( latitude, longitude, altitude ) {
@@ -62,8 +70,9 @@ export default function Coordinates() {
     const [latitude, setLatitude] = useState(0);
     const [longitude, setLongitude] = useState(0);
     const [altitude, setAltitude] = useState(0);
-    const [loaded, setLoaded] = useState(false)
-    const [path, setPath] = useState(null)
+    const [loaded, setLoaded] = useState(false);
+    const [path, setPath] = useState(null);
+    const [liteMode, setLiteMode] = useState(true);
 
     const fetchCoordinates = async () => {
             try {
@@ -109,7 +118,15 @@ export default function Coordinates() {
     
     return (
         <>
-            
+            <button 
+                onClick={
+                    (prev)=>{
+                        setLiteMode(!prev)
+                    }
+                }    
+            >
+                lite mode {liteMode}
+            </button>
             <Canvas camera={{position: [x*scale, y*scale + 2, z*scale + 2]}} style={{ height: '100vh', width: '100%'}}>
                 <Suspense fallback={null}>
                 <color attach="background" args={["black"]}/>
@@ -134,7 +151,7 @@ export default function Coordinates() {
                 )}
                 {console.log(path)}
     
-                <ISSModel position={[x * scale, y * scale, z * scale]}/>   
+                <ISSModel position={[x * scale, y * scale, z * scale]} quick={liteMode}/>   
                 
                 <Preload all/>
                 </Suspense>
