@@ -5,48 +5,16 @@ import axios from "axios";
 import { Canvas, useLoader } from "@react-three/fiber";
 import { PointLight, Mesh, AmbientLight, SphereGeometry, MeshStandardMaterial, TextureLoader } from "three";
 import { OrbitControls, Stars, Line, Html } from "@react-three/drei";
-import Img from "./earthTexture.webp"
+import Earth from "./3dModels/Eath";
 import LatLonGrid from "./LatLonGrid";
 import { useGLTF, Preload } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
-
+import HtmlInfo from "./3dModels/HtmlInfo";
+import ISSModel from "./3dModels/ISSModel";
 
 //import Model from "./ISS/source/mesh.glb"
 const earthRadius = 6371;// in kilometers
 const simEarthRadius = 5;// in units for the simulation, you can adjust this as needed
-useGLTF.preload('/ISS/source/sat-compressed.glb');
-useTexture.preload(Img)
-
-function HtmlInfo({data = [0, 0, 0, 0]}){
-    return(
-        <Html occlude distanceFactor={10} position={[-1, 0.5, 0]}>
-            <div className="bg-gray-700 text-white whitespace-nowrap p-1 rounded-md select-none">
-                <p className="w-full"><span className="font-bold">Location</span> ({data[0].toFixed(2)}, {data[1].toFixed(2)})</p>
-                <p className="w-full"><span className="font-bold">Altitude</span> {data[2].toFixed(1)} Km</p>
-                <p className="w-full"><span className="font-bold">Velocity</span> {data[3].toFixed(1)}</p>
-            </div>
-        </Html>
-    )
-}
-
-function ISSModel({position = [0, 0, 6], scale = 0.001, quick = true, data = [0, 0, 0, 0]}){
-    if (quick){
-        return(
-            <mesh position={position}> 
-                <sphereGeometry args={[0.2, 16, 16]}/>
-                <meshStandardMaterial color={"red"} />
-                <HtmlInfo data={data}/>
-            </mesh>
-        )
-    } 
-    const {scene} =useGLTF('/ISS/source/satglb.glb');
-    return (
-        <group position={position}>
-            <primitive object={scene} scale={[0.2, 0.2, 0.2]} dispose={null} />
-            <HtmlInfo data={data}/>
-        </group>
-    )
-}
 
 function CartesianCoordinates( latitude, longitude, altitude ) {
     const radius = earthRadius + altitude; // distance from the center of the Earth to the ISS
@@ -59,34 +27,6 @@ function CartesianCoordinates( latitude, longitude, altitude ) {
     const z = radius * Math.cos(latRad) * Math.cos(lonRad);
 
     return [x, y, z];
-}
-
-function latLonToXYZ(lat, lon, radius) {
-  const latRad = lat * Math.PI / 180
-  const lonRad = lon * Math.PI / 180
-
-  const x = radius * Math.cos(latRad) * Math.sin(lonRad)
-  const y = radius * Math.sin(latRad)
-  const z = radius * Math.cos(latRad) * Math.cos(lonRad)
-
-  return [x, y, z]
-}
-
-function Earth(){
-    const texture = useTexture(Img)
-    return(
-        <>
-            <mesh rotation={[0, -Math.PI / 2, 0]}> 
-                <sphereGeometry args={[5, 32, 32]}/>
-                <meshStandardMaterial map={texture} />
-                <Html center position={[0 , -7, 0]}>
-                    <div className="text-white whitespace-nowrap text-center select-none">
-                        Look around! <br/>The ISS might be outside the camera FOV
-                    </div>
-                </Html>
-            </mesh>
-        </>
-    )
 }
 
 export default function Coordinates() {
@@ -139,8 +79,6 @@ export default function Coordinates() {
         })
     
     },[x, y, z])
-
-
     
     return (
         <>
@@ -152,13 +90,6 @@ export default function Coordinates() {
                 lite mode <span style={{ color: liteMode ? "#00ff00" : "#ff0000" }} className="text-bold">{liteMode ? "ON" : "OFF"}</span>
             </button>
             <Canvas camera={{position: [x*scale, y*scale + 2, z*scale + 5]}} style={{ height: '100vh', width: '100%'}} className="z-0 relative">
-                <Suspense fallback={null}>
-                <color attach="background" args={["black"]}/>
-                <OrbitControls 
-                    enableZoom = {false}
-                />
-                <ambientLight />
-                <pointLight position={[10, 10, 10]} />
                 <Stars
                     radius={80}
                     depth={40}
@@ -167,6 +98,14 @@ export default function Coordinates() {
                     fade
                     speed={0.5}
                 />
+                <Suspense fallback={null}>
+                <color attach="background" args={["black"]}/>
+                <OrbitControls 
+                    enableZoom = {false}
+                />
+                <ambientLight />
+                <pointLight position={[10, 10, 10]} />
+                
                 <Earth/>
                 <LatLonGrid radius={5.01}/>
                 
@@ -176,11 +115,9 @@ export default function Coordinates() {
                 {console.log(path)}
     
                 <ISSModel key={liteMode ? "lite" : "full"} position={[x * scale, y * scale, z * scale]} quick={liteMode} data={[latitude, longitude, altitude, velocity]}/>   
-                
                 <Preload all/>
                 </Suspense>
             </Canvas>
         </>
     )
 }
-//gltf-pipeline -i public/ISS/source/satglb.glb -o public/ISS/source/sat-compressed.glb -d
