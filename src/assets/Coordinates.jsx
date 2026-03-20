@@ -98,14 +98,14 @@ export default function Coordinates() {
                     fade
                     speed={0.5}
                 />
-                <Suspense fallback={null}>
+                
                 <color attach="background" args={["black"]}/>
                 <OrbitControls 
                     enableZoom = {false}
                 />
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
-                
+                <Suspense fallback={null}>
                 <Earth/>
                 <LatLonGrid radius={5.01}/>
                 
