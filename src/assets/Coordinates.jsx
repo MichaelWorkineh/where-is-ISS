@@ -11,6 +11,7 @@ import { useGLTF, Preload } from "@react-three/drei";
 import { useTexture } from "@react-three/drei";
 import HtmlInfo from "./3dModels/HtmlInfo";
 import ISSModel from "./3dModels/ISSModel";
+import Map from "./Map.jsx"
 
 //import Model from "./ISS/source/mesh.glb"
 const earthRadius = 6371;// in kilometers
@@ -89,6 +90,7 @@ export default function Coordinates() {
             >
                 lite mode <span style={{ color: liteMode ? "#00ff00" : "#ff0000" }} className="text-bold">{liteMode ? "ON" : "OFF"}</span>
             </button>
+            <Map location = {[latitude, longitude]} zoom={1} height = "200px" width="500px" className="z-20 absolute bottom-5 right-5"/>
             <Canvas camera={{position: [x*scale, y*scale + 2, z*scale + 5]}} style={{ height: '100vh', width: '100%'}} className="z-0 relative">
                 <Stars
                     radius={80}
@@ -118,6 +120,8 @@ export default function Coordinates() {
                 <Preload all/>
                 </Suspense>
             </Canvas>
+            
+            <Map location = {[latitude, longitude]} zoom={10}/>
         </>
     )
 }

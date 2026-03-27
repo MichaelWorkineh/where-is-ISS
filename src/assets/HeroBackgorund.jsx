@@ -18,6 +18,7 @@ export default function HeroBackground({videoID = 'sWasdbDVNvc'}) {
                     -translate-x-1/2
                     -translate-y-1/2
                     pointer-events-none
+                    animate-zoomSlow
                 '
             />
         </div>

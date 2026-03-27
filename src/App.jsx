@@ -1,18 +1,21 @@
 import './App.css'
 import HeroBackground from './assets/HeroBackgorund'
 import Coordinates from './assets/Coordinates'
+import Map from './assets/Map'
 {/*<iframe className="w-screen h-screen" allow="autoplay" src="https://www.youtube.com/embed/sWasdbDVNvc?si=4toWMppTctxpFEgB&amp;controls=0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>*/}
 function App() {
   return (
-    <div className='snap-y snap-mandatory'>
+    <>
       <div className='relative flex items-center justify-center h-screen overflow-hidden'>
         <HeroBackground videoID='zPH5KtjJFaQ'/>
         <div className='relative flex items-center justify-center z-10 w-full h-full bg-black/60'>
           <h1 className='text-7xl text-center text-white font-bold'>Where is the ISS?</h1>
         </div>
       </div>
-      <Coordinates/>
-    </div>
+      <div className='relative'>
+        <Coordinates/>
+      </div>
+    </>
   )
 }
 
