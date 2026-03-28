@@ -1,18 +1,17 @@
 import React from "react";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { Canvas, useLoader } from "@react-three/fiber";
+import { Canvas } from "@react-three/fiber";
 import { PointLight, Mesh, AmbientLight, SphereGeometry, MeshStandardMaterial, TextureLoader } from "three";
 import { OrbitControls, Stars, Line, Html } from "@react-three/drei";
 import Earth from "./3dModels/Eath";
 import LatLonGrid from "./LatLonGrid";
-import { useGLTF, Preload } from "@react-three/drei";
-import { useTexture } from "@react-three/drei";
-import HtmlInfo from "./3dModels/HtmlInfo";
+import { Preload } from "@react-three/drei";
 import ISSModel from "./3dModels/ISSModel";
 import Map from "./Map.jsx"
-
+import Location from "./Location.jsx";
+import WeatherInfo from "./WeatherInfo.jsx";
 //import Model from "./ISS/source/mesh.glb"
 const earthRadius = 6371;// in kilometers
 const simEarthRadius = 5;// in units for the simulation, you can adjust this as needed
@@ -58,6 +57,8 @@ export default function Coordinates() {
 
         const intervailID = setInterval(()=>{
             fetchCoordinates();
+            console.log("lat",latitude)
+            console.log("lon",longitude)
         }, 3000);
         return () => clearInterval(intervailID);
     }, []);
@@ -90,7 +91,6 @@ export default function Coordinates() {
             >
                 lite mode <span style={{ color: liteMode ? "#00ff00" : "#ff0000" }} className="text-bold">{liteMode ? "ON" : "OFF"}</span>
             </button>
-            <Map location = {[latitude, longitude]} zoom={1} height = "200px" width="500px" className="z-20 absolute bottom-5 right-5"/>
             <Canvas camera={{position: [x*scale, y*scale + 2, z*scale + 5]}} style={{ height: '100vh', width: '100%'}} className="z-0 relative">
                 <Stars
                     radius={80}
@@ -107,7 +107,7 @@ export default function Coordinates() {
                 />
                 <ambientLight />
                 <pointLight position={[10, 10, 10]} />
-                <Suspense fallback={null}>
+
                 <Earth/>
                 <LatLonGrid radius={5.01}/>
                 
@@ -118,10 +118,11 @@ export default function Coordinates() {
     
                 <ISSModel key={liteMode ? "lite" : "full"} position={[x * scale, y * scale, z * scale]} quick={liteMode} data={[latitude, longitude, altitude, velocity]}/>   
                 <Preload all/>
-                </Suspense>
             </Canvas>
             
-            <Map location = {[latitude, longitude]} zoom={10}/>
+            <Map location = {[latitude, longitude]} zoom={3}/>
+            <Location lat={latitude} lon={longitude}/>
+            <WeatherInfo lat={latitude} lon={longitude}/>
         </>
     )
 }

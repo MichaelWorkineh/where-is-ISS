@@ -11,7 +11,7 @@ function RecterMap({location}) {
     return null
   }
 
-const MapComponent = ({location = [0, 0], zoom = 10, height = '500px', width = '100%'}) => {
+const MapComponent = ({location, zoom = 10, height = '500px', width = '100%'}) => {
   const [groundTrack, setGroundTrack] = useState([])
   useEffect(()=>{
     if (!location[0] || !location[1]) return

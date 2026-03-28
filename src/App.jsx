@@ -6,10 +6,44 @@ import Map from './assets/Map'
 function App() {
   return (
     <>
+      {/*
       <div className='relative flex items-center justify-center h-screen overflow-hidden'>
         <HeroBackground videoID='zPH5KtjJFaQ'/>
         <div className='relative flex items-center justify-center z-10 w-full h-full bg-black/60'>
           <h1 className='text-7xl text-center text-white font-bold'>Where is the ISS?</h1>
+        </div>
+      </div>
+      */}
+      <div className="relative flex items-center justify-center h-screen overflow-hidden">
+
+        <HeroBackground videoID="zPH5KtjJFaQ" />
+
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-black/60 z-10" />
+
+        {/* Content */}
+        <div className="relative z-20 text-center text-white px-4">
+
+          <h1 className="text-5xl md:text-6xl font-bold opacity-0 fade-in-up"
+            style={{ animationDelay: "2s" }}
+          >
+            Where is the ISS?
+          </h1>
+
+          <p
+            className="mt-4 text-lg opacity-0 fade-in-up"
+            style={{ animationDelay: "2.5s" }}
+          >
+            You are orbiting Earth at 28,000 km/h
+          </p>
+
+          <p
+            className="mt-2 text-sm opacity-0 fade-in-up"
+            style={{ animationDelay: "3s" }}
+          >
+            Altitude: ~420 km
+          </p>
+
         </div>
       </div>
       <div className='relative'>
